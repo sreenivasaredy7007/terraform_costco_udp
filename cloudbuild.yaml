@@ -1,0 +1,33 @@
+steps:
+  # Step 1: Set up Terraform
+  - name: hashicorp/terraform:1.5.6  # Use an appropriate Terraform version
+    entrypoint: "/bin/sh"
+    args:
+      - "-c"
+      - |
+        terraform --version
+        terraform init
+
+  # Step 2: Terraform Plan
+  - name: hashicorp/terraform:1.5.6
+    id: terraform-plan
+    entrypoint: "/bin/sh"
+    args:
+      - "-c"
+      - |
+        terraform plan -var="project_id=$PROJECT_ID" -out=tfplan
+
+  # Step 3: Terraform Apply
+  - name: hashicorp/terraform:1.5.6
+    id: terraform-apply
+    entrypoint: "/bin/sh"
+    args:
+      - "-c"
+      - |
+        terraform apply -auto-approve tfplan
+
+substitutions:
+  _PROJECT_ID: "costco-udp"
+
+# Permissions
+timeout: "1200s"  # 20 minutes, adjust as needed
