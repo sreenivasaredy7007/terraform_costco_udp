@@ -1,15 +1,21 @@
-output "bigquery_dataset_id" {
-  value = module.bigquery.dataset_id
+# Output the rendered templates for verification (optional)
+output "rendered_topic" {
+  value = data.template_file.pubsub_topic.rendered
 }
 
-output "bigquery_table_id" {
-  value = module.bigquery.table_id
+output "rendered_subscription" {
+  value = data.template_file.pubsub_subscription.rendered
 }
 
-output "pubsub_topic" {
-  value = module.pubsub.topic_name
+# Include resources using Terraform's `resource` blocks for actual deployment
+resource "google_pubsub_topic" "topic" {
+  name    = var.topic_name
+  project = var.project_id
 }
 
-output "pubsub_subscription" {
-  value = module.pubsub.subscription_name
+resource "google_pubsub_subscription" "subscription" {
+  name                 = var.subscription_name
+  topic                = google_pubsub_topic.topic.id
+  project              = var.project_id
+  ack_deadline_seconds = 10
 }
